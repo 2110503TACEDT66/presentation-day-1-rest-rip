@@ -9,7 +9,7 @@ const { protect, authorize } = require('../middleware/auth');
 router.use('/:workingSpaceId/reservation/', reservationRouter);
 
 router.route('/')
-    .get(getWorkingSpaces)
+    .get(getworkingSpaces)
     .post(protect, authorize('admin'), createWorkingSpace);
 router.route('/:id')
     .get(getWorkingSpace)
