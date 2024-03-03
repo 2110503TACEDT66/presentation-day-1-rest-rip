@@ -5,7 +5,8 @@ const ratingSchema = new mongoose.Schema({
         type: Number,
         required: true,
         min : 0,
-        max : 5
+        max : 5,
+        default : 0
     },
     user: {
         type: mongoose.Schema.ObjectId,
