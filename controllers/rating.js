@@ -105,7 +105,7 @@ const addRating = async (req, res) => {
     }
 };
 
-exports.getAvgRating = async (req, res, next) => {
+const getAvgRating = async (req, res, next) => {
     try {
        
         const aggregateResult = await Rating.aggregate([
