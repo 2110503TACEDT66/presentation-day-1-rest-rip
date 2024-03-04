@@ -3,6 +3,7 @@ const dotenv = require('dotenv');
 const cookieParser = require('cookie-parser');
 const workingSpaces = require('./routes/workingSpace')
 const reservations = require('./routes/reservation');
+const ratings = require('./routes/rating');
 const mongoSanitize = require('express-mongo-sanitize');
 const rateLimit = require('express-rate-limit');
 const {xss} = require('express-xss-sanitizer');
@@ -25,6 +26,7 @@ app.use(cookieParser());
 app.use('/workingSpaces', workingSpaces);
 app.use('/reservations', reservations);
 app.use('/auth',auth);
+app.use('/ratings', ratings);
 
 
 const PORT = process.env.PORT || 5000;
