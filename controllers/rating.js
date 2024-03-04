@@ -29,9 +29,9 @@ const getRating = async (req, res) => {
 // Update rating
 const updateRating = async (req, res) => {
     const { id } = req.params;
-    const { rating } = req.body;
+    const { rating,comment } = req.body;
     try {
-        const updatedRating = await Rating.findByIdAndUpdate(id, { rating }, { new: true });
+        const updatedRating = await Rating.findByIdAndUpdate(id, { rating,comment }, { new: true });
         if (!updatedRating) {
             return res.status(404).json({ error: 'Rating not found' });
         }
