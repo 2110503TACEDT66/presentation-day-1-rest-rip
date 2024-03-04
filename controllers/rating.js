@@ -78,12 +78,18 @@ const addRating = async (req, res) => {
             });
         }
 
-        const existedRating = await Rating.find({
-            user: req.user.id,
-            workingSpaceId: req.params.workingSpaceId
-        });
+        const aggregateResult = await Rating.aggregate([
+            {
+                $match: {
+                    workingSpace: new mongoose.Types.ObjectId(req.params.workingSpaceId),
+                    user : new mongoose.Types.ObjectId(req.user.id)
 
-        if (existedRating.length > 0) {
+                }
+            }]
+        );
+
+        if (aggregateResult.length > 0) {
+            console.log("here");
             return res.status(400).json({
                 success: false,
                 message: `The user with ID ${req.user.id} has already rated this working space`
