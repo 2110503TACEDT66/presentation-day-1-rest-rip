@@ -1,5 +1,6 @@
 const Rating = require('../models/Rating');
 const WorkingSpace = require('../models/WorkingSpace');
+const mongoose = require('mongoose');
 
 // Get all ratings
 const getRatings = async (req, res) => {
@@ -105,9 +106,10 @@ const addRating = async (req, res) => {
     }
 };
 
-const getAvgRating = async (req, res) => {
+const getAvgRatings = async (req, res) => {
     try {
-    
+        const { id } = req.params;
+        
         const aggregateResult = await Rating.aggregate([
             {
                 $group: {
@@ -117,10 +119,43 @@ const getAvgRating = async (req, res) => {
             }
         ]);
         
-        // aggregateResult will contain an array of objects, each representing a WorkingSpace and its average rating
+     
         console.log(aggregateResult);
         
        
+        res.status(200).json({
+            succes: true,
+            data: aggregateResult
+        });
+
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json({
+            success: false,
+            message: 'Cannot get Average Rating'
+        });
+    }
+};
+
+const getAvgRating = async (req, res) => {
+    
+    try {
+    
+        const { id } = req.params;
+
+        const aggregateResult = await Rating.aggregate([
+            {
+                $match: {
+                    workingSpace: new mongoose.Types.ObjectId(id)
+                }
+            },
+            {
+                $group: {
+                    _id: "$workingSpace",
+                    averageRating: { $avg: "$rating" }
+                }
+            }
+        ]);
         res.status(200).json({
             succes: true,
             data: aggregateResult
@@ -141,5 +176,6 @@ module.exports = {
     updateRating,
     deleteRating,
     addRating,
+    getAvgRatings,
     getAvgRating
 };
