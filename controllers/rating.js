@@ -1,51 +1,69 @@
 const Rating = require('../models/Rating');
 const WorkingSpace = require('../models/WorkingSpace');
-const User = require('../models/User');
 
-exports.getRatings = async (req, res, next) => {
-    // console.log("here");
-    let query;
-    //populate **********
-
-
-    if (req.user.role !== 'admin') {
-        query = Rating.find({ user: req.user.id }).populate({
-            path: 'workingSpace',
-            select: 'name province tel'
-        }).populate({
-            path: "user", // Use "user" instead of "User"
-            select: "name",
-        });
-    } else {
-        query = Rating.find().populate(
-            {
-                path: "workingSpace",
-                select: "name province tel",
-            }
-        ).populate({
-            path: "user", // Use "user" instead of "User"
-            select: "name",
-        });
-    }
-
+// Get all ratings
+const getRatings = async (req, res) => {
     try {
-        const reservations = await query;
-        res.status(200).json({
-            success: true,
-            count: reservations.length,
-            data: reservations
-        });
-    } catch (err) {
-        console.log(err);
-        return res.status(500).json({
-            success: false,
-            message:
-                "Cannot find Reservation"
-        });
+        const ratings = await Rating.find();
+        res.json(ratings);
+    } catch (error) {
+        res.status(500).json({ error: 'Internal server error' });
     }
 };
 
-exports.addRating = async (req, res, next) => {
+// Get rating by ID
+const getRating = async (req, res) => {
+    const { id } = req.params;
+    try {
+        const rating = await Rating.findById(id);
+        if (!rating) {
+            return res.status(404).json({ error: 'Rating not found' });
+        }
+        res.json(rating);
+    } catch (error) {
+        res.status(500).json({ error: 'Internal server error' });
+    }
+};
+
+// Update rating
+const updateRating = async (req, res) => {
+    const { id } = req.params;
+    const { rating } = req.body;
+    try {
+        const updatedRating = await Rating.findByIdAndUpdate(id, { rating }, { new: true });
+        if (!updatedRating) {
+            return res.status(404).json({ error: 'Rating not found' });
+        }
+        res.json(updatedRating);
+    } catch (error) {
+        res.status(500).json({ error: 'Internal server error' });
+    }
+};
+
+// Delete rating
+const deleteRating = async (req, res) => {
+    const { id } = req.params;
+    try {
+        const deletedRating = await Rating.findByIdAndDelete(id);
+        if (!deletedRating) {
+            return res.status(404).json({ error: 'Rating not found' });
+        }
+        res.json({ message: 'Rating deleted successfully' });
+    } catch (error) {
+        res.status(500).json({ error: 'Internal server error' });
+    }
+};
+// Add rating
+const addRating = async (req, res) => {
+    // const { rating } = req.body;
+    // try {
+    //     const newRating = new Rating({ rating });
+    //     const savedRating = await newRating.save();
+    //     res.json(savedRating);
+    // } catch (error) {
+    //     res.status(500).json({ error: 'Internal server error' });
+    // }
+
     try {
         req.body.workingSpace = req.params.workingSpaceId;
         const workingSpace = await WorkingSpace.findById(
@@ -55,32 +73,35 @@ exports.addRating = async (req, res, next) => {
         if (!workingSpace) {
             return res.status(404).json({
                 success: false,
-                message: `No CO-Working Space with id ${req.params.workingSpaceId}`
+                message: `No workingSpace with the id of ${req.params.workingSpaceId}`
             });
         }
-        req.body.user = req.user.id;
-        if (req.user.id !== req.body.user && req.user.role !== 'admin') {
+
+        const existedRating = await Rating.find({
+            user: req.user.id,
+            workingSpaceId: req.params.workingSpaceId
+        });
+
+        if (existedRating.length > 0) {
             return res.status(400).json({
                 success: false,
-                message: `The user with ID ${req.user.id} add the rating to the another User`
-            });
+                message: `The user with ID ${req.user.id} has already rated this working space`
+            })
         }
 
-
-        
-
-        const reservation = await Rating.create(req.body);
+        req.body.user = req.user.id;
+        const rating = await Rating.create(req.body);
         res.status(200).json({
-            succes: true,
-            data: reservation
-        });
-
-    } catch (error) {
-        console.log(error);
-        return res.status(500).json({
+            success: true,
+            data: rating
+        })
+    }
+    catch (err) {
+        console.log(err);
+        res.status(500).json({
             success: false,
             message: 'Cannot create Rating'
-        });
+        })
     }
 };
 
@@ -112,4 +133,13 @@ exports.getAvgRating = async (req, res, next) => {
             message: 'Cannot get Average Rating'
         });
     }
+};
+
+module.exports = {
+    getRatings,
+    getRating,
+    updateRating,
+    deleteRating,
+    addRating,
+    getAvgRating
 };

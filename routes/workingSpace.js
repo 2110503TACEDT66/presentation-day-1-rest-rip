@@ -8,7 +8,9 @@ const router = express.Router();
 const { protect, authorize } = require('../middleware/auth');
 
 router.use('/:workingSpaceId/reservation/', reservationRouter);
-router.use('/:workingSpaceId/rating', ratingRouter);
+
+router.use("/:workingSpaceId/rating/", ratingRouter);
+
 
 router.route('/')
     .get(getWorkingSpaces)
