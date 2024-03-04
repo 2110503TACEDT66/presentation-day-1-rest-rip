@@ -1,4 +1,5 @@
-const Rating = require('../models/rating');
+const Rating = require('../models/Rating');
+const WorkingSpace = require('../models/WorkingSpace');
 
 // Get all ratings
 const getRatings = async (req, res) => {
@@ -54,13 +55,53 @@ const deleteRating = async (req, res) => {
 };
 // Add rating
 const addRating = async (req, res) => {
-    const { rating } = req.body;
+    // const { rating } = req.body;
+    // try {
+    //     const newRating = new Rating({ rating });
+    //     const savedRating = await newRating.save();
+    //     res.json(savedRating);
+    // } catch (error) {
+    //     res.status(500).json({ error: 'Internal server error' });
+    // }
+
     try {
-        const newRating = new Rating({ rating });
-        const savedRating = await newRating.save();
-        res.json(savedRating);
-    } catch (error) {
-        res.status(500).json({ error: 'Internal server error' });
+        req.body.workingSpace = req.params.workingSpaceId;
+        const workingSpace = await WorkingSpace.findById(
+            req.params.workingSpaceId
+        );
+
+        if (!workingSpace) {
+            return res.status(404).json({
+                success: false,
+                message: `No workingSpace with the id of ${req.params.workingSpaceId}`
+            });
+        }
+
+        const existedRating = await Rating.find({
+            user: req.user.id,
+            workingSpaceId: req.params.workingSpaceId
+        });
+
+        if (existedRating.length > 0) {
+            return res.status(400).json({
+                success: false,
+                message: `The user with ID ${req.user.id} has already rated this working space`
+            })
+        }
+
+        req.body.user = req.user.id;
+        const rating = await Rating.create(req.body);
+        res.status(200).json({
+            success: true,
+            data: rating
+        })
+    }
+    catch (err) {
+        console.log(err);
+        res.status(500).json({
+            success: false,
+            message: 'Cannot create Rating'
+        })
     }
 };
 

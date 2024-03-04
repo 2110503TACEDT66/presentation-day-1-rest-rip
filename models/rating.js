@@ -4,14 +4,14 @@ const ratingSchema = new mongoose.Schema({
     rating: {
         type: Number,
         required: true,
-        min : 0,
-        max : 5,
-        default : 0
+        min: 0,
+        max: 5,
+        default: 0
     },
-    comment :{
-        type : String,
-        required : true,
-        default : "No comment"
+    comment: {
+        type: String,
+        required: true,
+        default: "No comment"
     },
     user: {
         type: mongoose.Schema.ObjectId,
