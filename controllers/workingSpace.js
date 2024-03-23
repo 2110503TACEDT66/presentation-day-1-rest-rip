@@ -5,20 +5,28 @@ const WorkingSpace = require('../models/WorkingSpace');
 exports.getWorkingSpaces = async (req, res, next) => {
     try{
         let query;
-
+       
         const reqQuery = {...req.query};
-
+      
         const removeFields = ['select','sort','page','limit'] ;
 
         removeFields.forEach(param => delete reqQuery[param]);
-        console.log(reqQuery);
+        // console.log(reqQuery);
 
         let queryStr = JSON.stringify(req.query);
         queryStr = queryStr.replace(/\b(gt|gte|lt|lte|in)\b/g, match => `$${match}`);
         // const hospitals = await Hospital.find(req.query);
         // console.log(req.query);
+        //   console.log("here");
+          
+        if(req.user && req.user.role === 'admin'){
+            console.log("here");
+            query = WorkingSpace.find(JSON.parse(queryStr)).populate('reservation');
+        }else{
+            console.log("workingSpace not admin or no authorization");
+            query = WorkingSpace.find(JSON.parse(queryStr));
+        }
 
-        query = WorkingSpace.find(JSON.parse(queryStr)).populate('reservation');
 
         if(req.query.select){
             const fields = req.query.select.split(',').join(' ');

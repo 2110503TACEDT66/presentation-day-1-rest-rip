@@ -10,13 +10,18 @@ const {xss} = require('express-xss-sanitizer');
 const helmet = require('helmet');
 const connectDB = require('./config/db');
 const auth = require('./routes/auth');
+const cors = require('cors');
 dotenv.config({path:'./config/config.env'});
 
+
 connectDB();
+
+
 
 const app = express();
 
 
+app.use(cors());
 app.use(express.json());
 app.use(mongoSanitize());
 app.use(xss());

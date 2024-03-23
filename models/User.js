@@ -32,6 +32,16 @@ const UserSchema =  new mongoose.Schema({
     createdAt : {
         type : Date,
         default : Date.now
+    },
+    tel : {
+        type : String,
+        required : [true, 'Please add a tel'],
+        maxlength : 10,
+    },
+    citizenID : {
+        type : String,
+        required : [true, 'Please add a CitizenID'],
+  
     }
 
 });
