@@ -1,5 +1,5 @@
 const express = require('express');
-const { getWorkingSpaces, getWorkingSpace, createWorkingSpace, updateWorkingSpace, deleteWorkingSpace } = require('../controllers/workingSpace');
+const { getWorkingSpaces, getWorkingSpace, createWorkingSpace, updateWorkingSpace, deleteWorkingSpace } = require('../controllers/workingSpace.js');
 
 
 const reservationRouter = require('./reservation');

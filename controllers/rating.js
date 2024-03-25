@@ -1,5 +1,5 @@
-const Rating = require('../models/Rating');
-const WorkingSpace = require('../models/WorkingSpace');
+const Rating = require('../models/Rating.js');
+const WorkingSpace = require('../models/WorkingSpace.js');
 const mongoose = require('mongoose');
 
 // Get all ratings
