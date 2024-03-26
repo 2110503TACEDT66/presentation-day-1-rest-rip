@@ -7,17 +7,17 @@ const router = express.Router({ mergeParams: true });
 const { protect, authorize } = require('../middleware/auth');
 
 router.route('/avg')
-    .get(protect, getAvgRatings);
+    .get(getAvgRatings);
 router.route('/avg/:id')
-    .get(protect, getAvgRating);
+    .get(getAvgRating);
     
 router.route('/:id')
-    .get(protect, getRating)
+    .get(getRating)
     .put(protect, authorize('admin', 'user'), updateRating)
     .delete(protect, authorize('admin', 'user'), deleteRating);
 
 router.route('/')
-    .get(protect, getRatings)
+    .get(getRatings)
     .post(protect, authorize('admin', 'user'), addRating);
 
 
